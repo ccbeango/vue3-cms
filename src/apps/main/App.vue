@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { RouterLink, RouterView } from 'vue-router'
+import HelloWorld from '@/components/HelloWorld.vue'
+import { useCounterStore } from '@/stores/counter'
+import { storeToRefs } from 'pinia'
+
+const store = useCounterStore()
+
+const { count } = storeToRefs(store)
+const { increment } = store
 </script>
 
 <template>
@@ -8,18 +15,26 @@ import TheWelcome from './components/TheWelcome.vue'
     <img
       alt="Vue logo"
       class="logo"
-      src="./assets/logo.svg"
+      src="@/assets/logo.svg"
       width="125"
       height="125"
     />
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
+
+      <nav>
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
+      </nav>
     </div>
   </header>
-
   <main>
-    <TheWelcome />
+    <div>
+      <h2>{{ count }}</h2>
+      <button @click="increment">+1</button>
+    </div>
+    <RouterView />
   </main>
 </template>
 
