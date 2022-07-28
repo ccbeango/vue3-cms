@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'url'
-import { resolve } from 'path'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -20,7 +19,7 @@ export default defineConfig({
           inject: {
             data: {
               title: 'mpa-app1',
-              injectScript: `<script type="module" src="/test.js"></script>`,
+              injectScript: `<script type="module" src="/test.js"></script>`
             }
           }
         },
@@ -31,7 +30,7 @@ export default defineConfig({
           inject: {
             data: {
               title: 'mpa-app2',
-              injectScript: `<script type="module" src="/test.js"></script>`,
+              injectScript: `<script type="module" src="/test.js"></script>`
             }
           }
         }
