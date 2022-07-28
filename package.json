@@ -34,8 +34,8 @@
     "husky": "^8.0.1",
     "prettier": "^2.5.1",
     "typescript": "~4.5.5",
-    "vite": "^2.8.4",
-    "vite-plugin-html-template": "^1.1.5",
+    "vite": "^3.0.3",
+    "vite-plugin-multiple-page": "^0.4.3",
     "vue-tsc": "^0.31.4"
   },
   "config": {
