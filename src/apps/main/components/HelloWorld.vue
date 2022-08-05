@@ -5,8 +5,10 @@ defineProps<{
 </script>
 
 <template>
-  <div class="greetings">
+  <div class="greetings theme-light">
     <h1 class="green">{{ msg }}</h1>
+    <h1 class="test level_15">{{ msg }}</h1>
+    <el-button type="danger">你好</el-button>
     <h3>
       You’ve successfully created a project with
       <a target="_blank" href="https://vitejs.dev/">Vite</a> +
@@ -15,7 +17,11 @@ defineProps<{
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+.test {
+  color: $color;
+  background: var(--background);
+}
 h1 {
   font-weight: 500;
   font-size: 2.6rem;

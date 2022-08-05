@@ -1,0 +1,25 @@
+$color: red;
+
+// 布局
+$navbarHeight: 3.6rem;
+$sidebarWidth: 18rem;
+$contentWidth: 860px;
+$homePageWidth: 1100px;
+$rightMenuWidth: 230px;
+
+
+.theme-light {
+  $background: pink;
+  --background: pink;
+  .level_15 {
+    font-size: 15px;
+  }
+}
+
+.theme-dark {
+  $background: purple;
+  --background: purple;
+  .level_15 {
+    font-size: 20px;
+  }
+}

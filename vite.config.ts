@@ -5,11 +5,21 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import MultiPagePlugin from 'vite-plugin-multiple-page'
 
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
+    AutoImport({
+      resolvers: [ElementPlusResolver()]
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()]
+    }),
     MultiPagePlugin({
       pages: {
         main: {
@@ -39,7 +49,15 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src/apps/main', import.meta.url))
+      '@': fileURLToPath(new URL('./src/apps/main', import.meta.url)),
+      '@common': fileURLToPath(new URL('./src/common', import.meta.url))
+    }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@common/styles/index.scss";`
+      }
     }
   },
   build: {

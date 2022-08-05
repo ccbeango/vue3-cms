@@ -22,7 +22,7 @@ const { increment } = store
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
-
+      <h2 class="test">你好</h2>
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
@@ -38,8 +38,13 @@ const { increment } = store
   </main>
 </template>
 
-<style>
+<style lang="scss">
 @import './assets/base.css';
+@import '../../common/styles/layout.scss';
+
+.test {
+  color: $color;
+}
 
 #app {
   max-width: 1280px;
