@@ -13,6 +13,7 @@ module.exports = {
     'vue/setup-compiler-macros': true
   },
   rules: {
-    'no-undef': 0
+    'no-undef': 0,
+    '@typescript-eslint/no-explicit-any': 0
   }
 }

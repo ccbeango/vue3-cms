@@ -33,28 +33,29 @@ interface ResponseData {
   data?: any
 }
 
-requestService.request<ResponseData>({
-  url: '/home/multidata',
-  method: 'get',
-  interceptors: {
-    requestInterceptor: config => {
-      console.log('单个请求的request拦截器')
-      return config
-    },
-    requestInterceptorCatch: err => {
-      console.log('单个请求的request的Error拦截器')
-      return err
-    },
-    responseInterceptor: res => {
-      console.log('单个请求的response拦截器')
-      return res
-    },
-    responseInterceptorCatch: err => {
-      console.log('单个请求的response的Error拦截器')
-      return err
+requestService
+  .request<ResponseData>({
+    url: '/home/multidata',
+    method: 'get',
+    interceptors: {
+      requestInterceptor: config => {
+        console.log('单个请求的request拦截器')
+        return config
+      },
+      requestInterceptorCatch: err => {
+        console.log('单个请求的request的Error拦截器')
+        return err
+      },
+      responseInterceptor: res => {
+        console.log('单个请求的response拦截器')
+        return res
+      },
+      responseInterceptorCatch: err => {
+        console.log('单个请求的response的Error拦截器')
+        return err
+      }
     }
-  }
-})
-.then(res => {
-  console.log('res222', res)
-})
+  })
+  .then(res => {
+    console.log('res222', res)
+  })
