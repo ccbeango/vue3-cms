@@ -3,6 +3,7 @@ import store from './stores'
 import router from './router'
 import App from './App.vue'
 import '@common/service/demo'
+import '@common/styles/reset.css'
 
 const app = createApp(App)
 

@@ -33,10 +33,10 @@ export default defineConfig({
             }
           }
         },
-        login: {
-          entry: 'src/apps/login/index.ts',
-          filename: 'login.html',
-          template: 'src/apps/login/index.html',
+        hello: {
+          entry: 'src/apps/hello/index.ts',
+          filename: 'hello.html',
+          template: 'src/apps/hello/index.html',
           inject: {
             data: {
               title: 'mpa-app2',
