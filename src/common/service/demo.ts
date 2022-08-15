@@ -3,7 +3,7 @@ import Request from './request'
 console.log('哈哈哈')
 
 const requestService = new Request({
-  baseURL: 'http://123.207.32.32:8000',
+  baseURL: 'http://152.136.185.210:4000',
   timeout: 3000,
   interceptors: {
     requestInterceptor: config => {

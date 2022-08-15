@@ -1,11 +1,20 @@
 <template>
-  <div class="login">Login~</div>
+  <div class="login">
+    <LoginPanel />
+  </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import LoginPanel from './cpns/login-panel.vue'
+</script>
 
 <style lang="scss" scoped>
 .login {
-  color: $color;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: url('../../assets/img/login-bg.svg');
 }
 </style>
