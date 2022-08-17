@@ -52,7 +52,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       }),
       viteMockServe({
         mockPath: 'mock2',
-        localEnabled: command === 'serve',
+        localEnabled: command === 'serve'
         // prodEnabled: command !== 'serve' && prodMock,
         // //  这样可以控制关闭mock的时候不让mock打包到最终代码内
         // injectCode: `
@@ -71,8 +71,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         '/mock': {
           target: 'http://localhost:3100',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/mock/, '')
-        },
+          rewrite: path => path.replace(/^\/mock/, '')
+        }
       }
     },
     resolve: {

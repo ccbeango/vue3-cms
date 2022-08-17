@@ -2,7 +2,9 @@
   try {
     await import('mockjs')
   } catch (e) {
-    throw new Error('vite-plugin-vue-mock requires mockjs to be present in the dependency tree.')
+    throw new Error(
+      'vite-plugin-vue-mock requires mockjs to be present in the dependency tree.'
+    )
   }
 })()
 
@@ -65,9 +67,9 @@ export function viteMockServe(opt: ViteMockOptions = {}): Plugin {
 
       return {
         map: needSourcemap ? this.getCombinedSourcemap() : null,
-        code: `${code}\n${injectCode}`,
+        code: `${code}\n${injectCode}`
       }
-    },
+    }
   }
 }
 
