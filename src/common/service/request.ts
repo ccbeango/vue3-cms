@@ -9,10 +9,11 @@ interface RequestInterceptors<T = AxiosResponse> {
 }
 
 interface RequestConfig<T = AxiosResponse> extends AxiosRequestConfig {
+  mock?: boolean
   interceptors?: RequestInterceptors<T>
 }
 
-export default class Request {
+export default class Request<R = AxiosResponse> {
   instance: AxiosInstance
   interceptors?: RequestInterceptors
 
@@ -67,7 +68,7 @@ export default class Request {
     )
   }
 
-  request<T>(config: RequestConfig<T>): Promise<T> {
+  request<T = R>(config: RequestConfig<T>): Promise<T> {
     return new Promise((resolve, reject) => {
       if (config.interceptors?.requestInterceptor) {
         config = config.interceptors.requestInterceptor(config)
