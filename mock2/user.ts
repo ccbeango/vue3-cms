@@ -9,8 +9,8 @@ export default [
       return {
         code: 0,
         message: 'ok',
-        data: null
+        data: null,
       }
-    }
-  }
+    },
+  },
 ] as MockMethod[]

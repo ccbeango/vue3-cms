@@ -3,7 +3,7 @@ import type {
   MockMethod,
   NodeModuleWithCompile,
   Recordable,
-  RespThisType
+  RespThisType,
 } from './types'
 
 import path from 'path'
@@ -21,7 +21,7 @@ import module from 'module'
 export let mockData: MockMethod[] = []
 
 export async function createMockServer(
-  opt: ViteMockOptions = { mockPath: 'mock', configPath: 'vite.mock.config' }
+  opt: ViteMockOptions = { mockPath: 'mock', configPath: 'vite.mock.config' },
 ) {
   opt = {
     mockPath: 'mock',
@@ -29,7 +29,7 @@ export async function createMockServer(
     supportTs: true,
     configPath: 'vite.mock.config.ts',
     logger: true,
-    ...opt
+    ...opt,
   }
 
   if (mockData.length > 0) return
@@ -54,7 +54,7 @@ export async function requestMiddleware(opt: ViteMockOptions) {
 
     const reqUrl = queryParams.pathname
 
-    const matchRequest = mockData.find(item => {
+    const matchRequest = mockData.find((item) => {
       if (!reqUrl || !item || !item.url) {
         return false
       }
@@ -86,11 +86,7 @@ export async function requestMiddleware(opt: ViteMockOptions) {
         }
       }
 
-      const self: RespThisType = {
-        req,
-        res,
-        parseJson: parseJson.bind(null, req)
-      }
+      const self: RespThisType = { req, res, parseJson: parseJson.bind(null, req) }
       if (isFunction(rawResponse)) {
         await rawResponse.bind(self)(req, res)
       } else {
@@ -98,12 +94,7 @@ export async function requestMiddleware(opt: ViteMockOptions) {
         res.setHeader('Content-Type', 'application/json')
         res.statusCode = statusCode || 200
         const mockResponse = isFunction(response)
-          ? response.bind(self)({
-              url: req.url,
-              body,
-              query,
-              headers: req.headers
-            })
+          ? response.bind(self)({ url: req.url, body, query, headers: req.headers })
           : response
         res.end(JSON.stringify(Mock.mock(mockResponse)))
       }
@@ -133,12 +124,10 @@ function createWatch(opt: ViteMockOptions) {
   const watchDir = []
   const exitsConfigPath = fs.existsSync(absConfigPath)
 
-  exitsConfigPath && configPath
-    ? watchDir.push(absConfigPath)
-    : watchDir.push(absMockPath)
+  exitsConfigPath && configPath ? watchDir.push(absConfigPath) : watchDir.push(absMockPath)
 
   const watcher = chokidar.watch(watchDir, {
-    ignoreInitial: true
+    ignoreInitial: true,
   })
 
   watcher.on('all', async (event, file) => {
@@ -153,7 +142,7 @@ function cleanRequireCache(opt: ViteMockOptions) {
     return
   }
   const { absConfigPath, absMockPath } = getPath(opt)
-  Object.keys(require.cache).forEach(file => {
+  Object.keys(require.cache).forEach((file) => {
     if (file === absConfigPath || file.indexOf(absMockPath) > -1) {
       delete require.cache[file]
     }
@@ -161,7 +150,7 @@ function cleanRequireCache(opt: ViteMockOptions) {
 }
 
 function parseJson(req: IncomingMessage): Promise<Recordable> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     let body = ''
     let jsonStr = ''
     req.on('data', function (chunk) {
@@ -195,9 +184,9 @@ async function getMockConfig(opt: ViteMockOptions) {
 
   const mockFiles = fg
     .sync(`**/*.{ts,js}`, {
-      cwd: absMockPath
+      cwd: absMockPath,
     })
-    .filter(item => {
+    .filter((item) => {
       if (!ignore) {
         return true
       }
@@ -215,9 +204,7 @@ async function getMockConfig(opt: ViteMockOptions) {
 
     for (let index = 0; index < mockFiles.length; index++) {
       const mockFile = mockFiles[index]
-      resolveModulePromiseList.push(
-        resolveModule(path.join(absMockPath, mockFile))
-      )
+      resolveModulePromiseList.push(resolveModule(path.join(absMockPath, mockFile)))
     }
 
     const loadAllResult = await Promise.all(resolveModulePromiseList)
@@ -246,7 +233,7 @@ async function resolveModule(p: string): Promise<any> {
     bundle: true,
     format: 'cjs',
     metafile: true,
-    target: 'es2015'
+    target: 'es2015',
   })
   const { text } = result.outputFiles[0]
 
@@ -261,26 +248,20 @@ function getPath(opt: ViteMockOptions) {
   const absConfigPath = path.join(cwd, configPath || '')
   return {
     absMockPath,
-    absConfigPath
+    absConfigPath,
   }
 }
 
-function loggerOutput(
-  title: string,
-  msg: string,
-  type: 'info' | 'error' = 'info'
-) {
-  const tag = type === 'info' ? `[vite:mock]` : `[vite:mock-server]`
+function loggerOutput(title: string, msg: string, type: 'info' | 'error' = 'info') {
+  const tag =
+    type === 'info' ? `[vite:mock]` : `[vite:mock-server]`
   return console.log(
-    `${new Date().toLocaleTimeString()} ${tag} ${title} ${msg}`
+    `${new Date().toLocaleTimeString()} ${tag} ${title} ${msg}`,
   )
 }
 
 // Parse file content
-export async function loadConfigFromBundledFile(
-  fileName: string,
-  bundledCode: string
-) {
+export async function loadConfigFromBundledFile(fileName: string, bundledCode: string) {
   const extension = path.extname(fileName)
 
   // @ts-expect-error

@@ -89,13 +89,11 @@ const requestService2 = new Request<ResponseData2>({
   }
 })
 
-requestService2
-  .request({
-    // url: '/mock/api/get',
-    url: '/api/get',
-    method: 'get',
-    mock: true
-  })
-  .then(res => {
-    console.log('啊啊啊', res)
-  })
+requestService2.request({
+  // url: '/mock/api/get',
+  url: '/api/get',
+  method: 'get',
+  mock: true
+}).then(res => {
+  console.log('啊啊啊', res)
+})
