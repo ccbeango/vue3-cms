@@ -80,8 +80,6 @@ function cleanRequireCache(opt: ViteMockOptions) {
   })
 }
 
-
-
 // load mock .ts files and watch
 async function getMockConfig(opt: ViteMockOptions) {
   cleanRequireCache(opt)
@@ -221,7 +219,6 @@ export async function loadConfigFromBundledFile(
 
   return config
 }
-
 
 function parseJson(req: IncomingMessage): Promise<Recordable> {
   return new Promise(resolve => {

@@ -1,4 +1,4 @@
-module.exports =  {
+module.exports = {
   url: '/api/createUser',
   method: 'post',
   response: ({ body, query }) => {

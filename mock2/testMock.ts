@@ -1,8 +1,7 @@
 import { MockMethod } from '../mock/types'
 
 export default [
-  {
-  },
+  {},
   'hello world',
   false,
   {
