@@ -3,7 +3,7 @@ import type {
   MockMethod,
   NodeModuleWithCompile,
   Recordable,
-  RespThisType,
+  RespThisType
 } from './types'
 
 import path from 'path'
@@ -11,7 +11,6 @@ import fs from 'fs'
 import chokidar from 'chokidar'
 import url from 'url'
 import fg from 'fast-glob'
-import Mock from 'mockjs'
 import { build } from 'esbuild'
 import { pathToRegexp, match } from 'path-to-regexp'
 import { isArray, isFunction, sleep, isRegExp } from './utils'
@@ -21,7 +20,7 @@ import module from 'module'
 export let mockData: MockMethod[] = []
 
 export async function createMockServer(
-  opt: ViteMockOptions = { mockPath: 'mock', configPath: 'vite.mock.config' },
+  opt: ViteMockOptions = { mockPath: 'mock', configPath: 'vite.mock.config' }
 ) {
   opt = {
     mockPath: 'mock',
@@ -29,82 +28,12 @@ export async function createMockServer(
     supportTs: true,
     configPath: 'vite.mock.config.ts',
     logger: true,
-    ...opt,
+    ...opt
   }
 
   if (mockData.length > 0) return
   mockData = await getMockConfig(opt)
   await createWatch(opt)
-}
-
-// request match
-export async function requestMiddleware(opt: ViteMockOptions) {
-  const { logger = true } = opt
-  const middleware: NextHandleFunction = async (req, res, next) => {
-    let queryParams: {
-      query?: {
-        [key: string]: any
-      }
-      pathname?: string | null
-    } = {}
-
-    if (req.url) {
-      queryParams = url.parse(req.url, true)
-    }
-
-    const reqUrl = queryParams.pathname
-
-    const matchRequest = mockData.find((item) => {
-      if (!reqUrl || !item || !item.url) {
-        return false
-      }
-      if (item.method && item.method.toUpperCase() !== req.method) {
-        return false
-      }
-      return pathToRegexp(item.url).test(reqUrl)
-    })
-
-    if (matchRequest) {
-      const isGet = req.method && req.method.toUpperCase() === 'GET'
-      const { response, rawResponse, timeout, statusCode, url } = matchRequest
-
-      if (timeout) {
-        await sleep(timeout)
-      }
-
-      const urlMatch = match(url, { decode: decodeURIComponent })
-
-      let query = queryParams.query
-      if (reqUrl) {
-        if ((isGet && JSON.stringify(query) === '{}') || !isGet) {
-          const params = (urlMatch(reqUrl) as any).params
-          if (JSON.stringify(params) !== '{}') {
-            query = (urlMatch(reqUrl) as any).params || {}
-          } else {
-            query = queryParams.query || {}
-          }
-        }
-      }
-
-      const self: RespThisType = { req, res, parseJson: parseJson.bind(null, req) }
-      if (isFunction(rawResponse)) {
-        await rawResponse.bind(self)(req, res)
-      } else {
-        const body = await parseJson(req)
-        res.setHeader('Content-Type', 'application/json')
-        res.statusCode = statusCode || 200
-        const mockResponse = isFunction(response)
-          ? response.bind(self)({ url: req.url, body, query, headers: req.headers })
-          : response
-        res.end(JSON.stringify(Mock.mock(mockResponse)))
-      }
-
-      logger && loggerOutput('request invoke', req.url!)
-      return
-    }
-    next()
-  }
-  return middleware
 }
 
 // create watch mock
@@ -124,10 +53,12 @@ function createWatch(opt: ViteMockOptions) {
   const watchDir = []
   const exitsConfigPath = fs.existsSync(absConfigPath)
 
-  exitsConfigPath && configPath ? watchDir.push(absConfigPath) : watchDir.push(absMockPath)
+  exitsConfigPath && configPath
+    ? watchDir.push(absConfigPath)
+    : watchDir.push(absMockPath)
 
   const watcher = chokidar.watch(watchDir, {
-    ignoreInitial: true,
+    ignoreInitial: true
   })
 
   watcher.on('all', async (event, file) => {
@@ -142,31 +73,14 @@ function cleanRequireCache(opt: ViteMockOptions) {
     return
   }
   const { absConfigPath, absMockPath } = getPath(opt)
-  Object.keys(require.cache).forEach((file) => {
+  Object.keys(require.cache).forEach(file => {
     if (file === absConfigPath || file.indexOf(absMockPath) > -1) {
       delete require.cache[file]
     }
   })
 }
 
-function parseJson(req: IncomingMessage): Promise<Recordable> {
-  return new Promise((resolve) => {
-    let body = ''
-    let jsonStr = ''
-    req.on('data', function (chunk) {
-      body += chunk
-    })
-    req.on('end', function () {
-      try {
-        jsonStr = JSON.parse(body)
-      } catch (err) {
-        jsonStr = ''
-      }
-      resolve(jsonStr as any)
-      return
-    })
-  })
-}
+
 
 // load mock .ts files and watch
 async function getMockConfig(opt: ViteMockOptions) {
@@ -184,9 +98,9 @@ async function getMockConfig(opt: ViteMockOptions) {
 
   const mockFiles = fg
     .sync(`**/*.{ts,js}`, {
-      cwd: absMockPath,
+      cwd: absMockPath
     })
-    .filter((item) => {
+    .filter(item => {
       if (!ignore) {
         return true
       }
@@ -204,7 +118,9 @@ async function getMockConfig(opt: ViteMockOptions) {
 
     for (let index = 0; index < mockFiles.length; index++) {
       const mockFile = mockFiles[index]
-      resolveModulePromiseList.push(resolveModule(path.join(absMockPath, mockFile)))
+      resolveModulePromiseList.push(
+        resolveModule(path.join(absMockPath, mockFile))
+      )
     }
 
     const loadAllResult = await Promise.all(resolveModulePromiseList)
@@ -233,7 +149,7 @@ async function resolveModule(p: string): Promise<any> {
     bundle: true,
     format: 'cjs',
     metafile: true,
-    target: 'es2015',
+    target: 'es2015'
   })
   const { text } = result.outputFiles[0]
 
@@ -248,20 +164,26 @@ function getPath(opt: ViteMockOptions) {
   const absConfigPath = path.join(cwd, configPath || '')
   return {
     absMockPath,
-    absConfigPath,
+    absConfigPath
   }
 }
 
-function loggerOutput(title: string, msg: string, type: 'info' | 'error' = 'info') {
-  const tag =
-    type === 'info' ? `[vite:mock]` : `[vite:mock-server]`
+function loggerOutput(
+  title: string,
+  msg: string,
+  type: 'info' | 'error' = 'info'
+) {
+  const tag = type === 'info' ? `[vite:mock]` : `[vite:mock-server]`
   return console.log(
-    `${new Date().toLocaleTimeString()} ${tag} ${title} ${msg}`,
+    `${new Date().toLocaleTimeString()} ${tag} ${title} ${msg}`
   )
 }
 
 // Parse file content
-export async function loadConfigFromBundledFile(fileName: string, bundledCode: string) {
+export async function loadConfigFromBundledFile(
+  fileName: string,
+  bundledCode: string
+) {
   const extension = path.extname(fileName)
 
   // @ts-expect-error
@@ -298,4 +220,103 @@ export async function loadConfigFromBundledFile(fileName: string, bundledCode: s
   }
 
   return config
+}
+
+
+function parseJson(req: IncomingMessage): Promise<Recordable> {
+  return new Promise(resolve => {
+    let body = ''
+    let jsonStr = ''
+    req.on('data', function (chunk) {
+      body += chunk
+    })
+    req.on('end', function () {
+      try {
+        jsonStr = JSON.parse(body)
+      } catch (err) {
+        jsonStr = ''
+      }
+      resolve(jsonStr as any)
+      return
+    })
+  })
+}
+
+// request match
+export async function requestMiddleware(opt: ViteMockOptions) {
+  const { logger = true } = opt
+  const middleware: NextHandleFunction = async (req, res, next) => {
+    let queryParams: {
+      query?: {
+        [key: string]: any
+      }
+      pathname?: string | null
+    } = {}
+
+    if (req.url) {
+      queryParams = url.parse(req.url, true)
+    }
+
+    const reqUrl = queryParams.pathname
+
+    const matchRequest = mockData.find(item => {
+      if (!reqUrl || !item || !item.url) {
+        return false
+      }
+      if (item.method && item.method.toUpperCase() !== req.method) {
+        return false
+      }
+      return pathToRegexp(item.url).test(reqUrl)
+    })
+
+    if (matchRequest) {
+      const isGet = req.method && req.method.toUpperCase() === 'GET'
+      const { response, rawResponse, timeout, statusCode, url } = matchRequest
+
+      if (timeout) {
+        await sleep(timeout)
+      }
+
+      const urlMatch = match(url, { decode: decodeURIComponent })
+
+      let query = queryParams.query
+      if (reqUrl) {
+        if ((isGet && JSON.stringify(query) === '{}') || !isGet) {
+          const params = (urlMatch(reqUrl) as any).params
+          if (JSON.stringify(params) !== '{}') {
+            query = (urlMatch(reqUrl) as any).params || {}
+          } else {
+            query = queryParams.query || {}
+          }
+        }
+      }
+
+      const self: RespThisType = {
+        req,
+        res,
+        parseJson: parseJson.bind(null, req)
+      }
+      if (isFunction(rawResponse)) {
+        await rawResponse.bind(self)(req, res)
+      } else {
+        const body = await parseJson(req)
+        res.setHeader('Content-Type', 'application/json')
+        res.statusCode = statusCode || 200
+        const mockResponse = isFunction(response)
+          ? response.bind(self)({
+              url: req.url,
+              body,
+              query,
+              headers: req.headers
+            })
+          : response
+        res.end(JSON.stringify(mockResponse))
+      }
+
+      logger && loggerOutput('request invoke', req.url!)
+      return
+    }
+    next()
+  }
+  return middleware
 }

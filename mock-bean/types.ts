@@ -1,19 +1,8 @@
-import { IncomingMessage, ServerResponse } from 'http'
+import type { IncomingMessage, ServerResponse } from 'http'
 
-export interface ViteMockOptions {
+export interface MockOptions {
   mockPath?: string
-  configPath?: string
-  ignore?: RegExp | ((fileName: string) => boolean)
-  watchFiles?: boolean
-  localEnabled?: boolean
-  prodEnabled?: boolean
-  injectFile?: string
-  injectCode?: string
-  /**
-   * Automatic recognition, no need to configure again
-   * @deprecated Deprecated after 2.8.0
-   */
-  supportTs?: boolean
+  watch?: boolean
   logger?: boolean
 }
 
@@ -23,13 +12,11 @@ export interface RespThisType {
   parseJson: () => any
 }
 
-export type MethodType = 'get' | 'post' | 'put' | 'delete' | 'patch'
-
 export type Recordable<T = any> = Record<string, T>
 
-export declare interface MockMethod {
+export interface MockMethod {
   url: string
-  method?: MethodType
+  method?: 'get' | 'post' | 'put' | 'delete' | 'patch'
   timeout?: number
   statusCode?: number
   response?:

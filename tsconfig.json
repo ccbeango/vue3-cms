@@ -1,12 +1,23 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["types/*", "src/**/*", "src/**/*.vue", "mock/*"],
+  "include": [
+    // "env.d.ts",
+    // "types/env.d.ts",
+    "types/**/*.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "mock/**/*",
+    "mock2/**/*",
+    "mock-bean/**/*",
+    "scripts/**/*.ts"
+  ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/apps/main/*"],
       "@common/*": ["./src/common/*"]
-    }
+    },
+    "typeRoots": ["./node_modules/@types/", "./types"]
   },
 
   "references": [

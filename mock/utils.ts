@@ -20,7 +20,7 @@ export function isRegExp(val: unknown): val is RegExp {
 }
 
 export function sleep(time: number) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(() => {
       resolve('')
     }, time)

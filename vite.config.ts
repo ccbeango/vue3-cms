@@ -1,6 +1,5 @@
 import { fileURLToPath, URL } from 'url'
 
-import { defineConfig } from 'vite'
 import type { ConfigEnv, UserConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
@@ -10,7 +9,8 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
-import { viteMockServe } from './mock'
+// import { viteMockServe } from './mock'
+import { ViteMockServer } from './mock-bean'
 
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   return {
@@ -51,15 +51,20 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           }
         }
       }),
-      viteMockServe({
+      // viteMockServe({
+      //   mockPath: 'mock2',
+      //   localEnabled: command === 'serve'
+      //   // prodEnabled: command !== 'serve' && prodMock,
+      //   // //  这样可以控制关闭mock的时候不让mock打包到最终代码内
+      //   // injectCode: `
+      //   //   import { setupProdMockServer } from './mockProdServer';
+      //   //   setupProdMockServer();
+      //   // `,
+      // }),
+      ViteMockServer({
         mockPath: 'mock2',
-        localEnabled: command === 'serve',
-        // prodEnabled: command !== 'serve' && prodMock,
-        // //  这样可以控制关闭mock的时候不让mock打包到最终代码内
-        // injectCode: `
-        //   import { setupProdMockServer } from './mockProdServer';
-        //   setupProdMockServer();
-        // `,
+        watch: true,
+        logger: true
       })
     ],
     server: {
@@ -72,8 +77,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         '/mock': {
           target: 'http://localhost:3100',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/mock/, '')
-        },
+          rewrite: path => path.replace(/^\/mock/, '')
+        }
       }
     },
     resolve: {
