@@ -106,6 +106,3 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     }
   }
 }
-
-// https://vitejs.dev/config/
-// export default defineConfig()

@@ -181,12 +181,10 @@ export async function requestMiddleware(options: any) {
   const { logger = true } = options
 
   const middleware: NextHandleFunction = async (req, res, next) => {
-    let queryParams: URL.UrlWithParsedQuery
-    if (req.url) {
-      queryParams = URL.parse(req.url, true)
-    }
+    if (!req.url) return next()
 
-    const reqUrl = queryParams.pathname
+    const queryParams = URL.parse(req.url, true)
+    const reqUrl = queryParams.pathname as string
 
     const matchRequest = mockData.find(item => {
       if (
@@ -213,16 +211,11 @@ export async function requestMiddleware(options: any) {
       decode: decodeURIComponent
     })
 
-    let query = queryParams.query
+    let query: object = queryParams.query
     if (reqUrl) {
       if ((isGet && JSON.stringify(query) === '{}') || !isGet) {
         const mathResult = urlMatch(reqUrl) as MatchResult
-        const params = mathResult.params
-        if (JSON.stringify(params) !== '{}') {
-          query = (urlMatch(reqUrl) as any).params || {}
-        } else {
-          query = queryParams.query || {}
-        }
+        query = mathResult.params || {}
       }
     }
 

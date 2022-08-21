@@ -97,16 +97,5 @@ requestService2
     mock: true
   })
   .then(res => {
-    console.log('啊啊啊', res)
-  })
-
-requestService2
-  .request({
-    // url: '/mock/api/get',
-    url: '',
-    method: 'get',
-    mock: true
-  })
-  .then(res => {
-    console.log('噶噶阿哥', res)
+    console.log('res', res)
   })
