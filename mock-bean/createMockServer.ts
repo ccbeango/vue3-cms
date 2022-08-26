@@ -4,8 +4,9 @@ import path from 'path'
 import module from 'module'
 import chokidar from 'chokidar'
 import URL from 'url'
-import { pathToRegexp, match, MatchResult } from 'path-to-regexp'
+import { pathToRegexp, match } from 'path-to-regexp'
 
+import type { MatchResult } from 'path-to-regexp'
 import type { IncomingMessage, NextHandleFunction } from 'connect'
 
 import type {
@@ -21,7 +22,7 @@ let mockData: MockMethod[] = []
 
 function loggerOutput(
   title: string,
-  msg: string,
+  msg: string | unknown,
   type: 'info' | 'error' = 'info'
 ) {
   const tag = type === 'info' ? `[vite:mock]` : `[vite:mock-error]`
@@ -46,7 +47,7 @@ export async function createMockServer(options: MockOptions) {
   //   ...options
   // }
 
-  const { mockPath = 'mock2', watch = true, logger = true } = options
+  const { mockPath = 'mock', watch = true, logger = true } = options
 
   if (mockData.length > 0) return
   const absMockPath = path.join(process.cwd(), mockPath || '')

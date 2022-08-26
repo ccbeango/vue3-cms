@@ -168,7 +168,7 @@ function getPath(opt: ViteMockOptions) {
 
 function loggerOutput(
   title: string,
-  msg: string,
+  msg: string | unknown,
   type: 'info' | 'error' = 'info'
 ) {
   const tag = type === 'info' ? `[vite:mock]` : `[vite:mock-server]`

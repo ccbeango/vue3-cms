@@ -62,19 +62,22 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       //   // `,
       // }),
       ViteMockServer({
-        mockPath: 'mock2',
+        mockPath: 'mock-api',
         watch: true,
         logger: true
       })
     ],
     server: {
       // https: true,
-      // Listening on all local IPs
       host: true,
       port: 3100,
-      // Load proxy configuration from .env
       proxy: {
-        '/mock': {
+        '^/api': {
+          target: 'http://152.136.185.210:4000',
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, '')
+        },
+        '^/mock': {
           target: 'http://localhost:3100',
           changeOrigin: true,
           rewrite: path => path.replace(/^\/mock/, '')

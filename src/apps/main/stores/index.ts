@@ -7,3 +7,9 @@ const store = createPinia()
 export default store
 
 export { useCounterStore, useLoginStore }
+
+
+export function setupStore() {
+  const loginStore = useLoginStore()
+  loginStore.loadLocalLogin()
+}

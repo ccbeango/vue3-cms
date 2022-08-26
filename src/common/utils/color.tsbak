@@ -1,0 +1,271 @@
+/**
+
+基于ANSI转义序列
+
+https://en.wikipedia.org/wiki/ANSI_escape_code
+
+在文本中嵌入确定的字节序列，大部分以ESC转义字符和"["字符开始，终端会把这些字节序列解释为相应的指令，而不是普通的字符编码。
+
+所有序列都以ASCII字符ESC（27 / 十六进制 0x1B）开头，第二个字节则是0x40–0x5F（ASCII @A–Z[\]^_）范围内的字符
+
+CSI序列 控制序列导入器（Control Sequence Introducer）
+  格式：ESC [ 若干个（包括0个）“参数字节”、若干个“中间字节”，以及一个“最终字节”组成
+
+  组成部分	字符范围	ASCII
+  ----------------------------------------
+  参数字节	0x30–0x3F	0–9:;<=>?
+  中间字节	0x20–0x2F	空格、!"#$%&'()*+,-./
+  最终字节	0x40–0x7E	@A–Z[\]^_`a–z{|}~
+
+  所有常见的序列都只是把参数用作一系列分号分隔的数字，如1;2;3。缺少的数字视为0（如1;;3相当于中间的数字是0，ESC[m这样没有参数的情况相当于参数为0）。
+
+ANSI转义序列#选择图形再现（SGR）参数
+https://zh.wikipedia.org/wiki/ANSI%E8%BD%AC%E4%B9%89%E5%BA%8F%E5%88%97#%E9%80%89%E6%8B%A9%E5%9B%BE%E5%BD%A2%E5%86%8D%E7%8E%B0%EF%BC%88SGR%EF%BC%89%E5%8F%82%E6%95%B0
+ */
+
+export {}
+
+enum HumanCode {
+  reset = 'reset',
+  bold = 'bold',
+  dim = 'dim',
+  italic = 'italic',
+  underline = 'underline',
+  twinkle = 'twinkle',
+  flash = 'flash',
+  inverse = 'inverse',
+  hidden = 'hidden',
+  strikethourgh = 'strikethourgh',
+  default = 'default',
+  black = 'black',
+  red = 'red',
+  green = 'green',
+  yellow = 'yellow',
+  blue = 'blue',
+  magenta = 'magenta',
+  cyan = 'cyan',
+  white = 'white',
+  gray = 'gray',
+  brightRed = 'brightRed',
+  brightGreen = 'brightGreen',
+  brightYellow = 'brightYellow',
+  brightBlue = 'brightBlue',
+  brightMagenta = 'brightMagenta',
+  brightCyan = 'brightCyan',
+  brightWhite = 'brightWhite',
+  bgBlack = 'bgBlack',
+  bgRed = 'bgRed',
+  bgGreen = 'bgGreen',
+  bgYellow = 'bgYellow',
+  bgBlue = 'bgBlue',
+  bgMagenta = 'bgMagenta',
+  bgCyan = 'bgCyan',
+  bgWhite = 'bgWhite',
+  bgBrightRed = 'bgBrightRed',
+  bgBrightGreen = 'bgBrightGreen',
+  bgBrightYellow = 'bgBrightYellow',
+  bgBrightBlue = 'bgBrightBlue',
+  bgBrightMagenta = 'bgBrightMagenta',
+  bgBrightCyan = 'bgBrightCyan',
+  bgBrightWhite = 'bgBrightWhite',
+  c256 = 'c256',
+  bgC256 = 'bgC256',
+  rgb = 'rgb',
+  bgRgb = 'bgRgb'
+}
+
+/**
+ * SGR参数
+ */
+const ANSI_SGR_CODE: Record<HumanCode, (string | number)[]> = {
+  reset: [0, 0], // 重置/正常
+
+  /* 字体 */
+  bold: [1, 22], // 粗体或增加强度 21不好使，22效果同21
+  dim: [2, 22], // 弱化（降低强度）
+  italic: [3, 23], // 斜体
+  underline: [4, 24], // 下划线
+  twinkle: [5, 25], // 缓慢闪烁
+  flash: [6, 25], // 快速闪烁
+  inverse: [7, 27], // 反显
+  hidden: [8, 28], // 隐藏
+  strikethourgh: [9, 29], // 删除线
+  default: [10, 10], // 默认字体
+
+  /* 颜色 */
+  // 前景色
+  black: [30, 39],
+  red: [31, 39],
+  green: [32, 39],
+  yellow: [33, 39],
+  blue: [34, 39],
+  magenta: [35, 39], // 洋红
+  cyan: [36, 39], // 青色
+  white: [37, 39],
+  // 前景色：亮色
+  gray: [90, 39], // 亮黑？灰！
+  brightRed: [91, 39],
+  brightGreen: [92, 39],
+  brightYellow: [93, 39],
+  brightBlue: [94, 39],
+  brightMagenta: [95, 39],
+  brightCyan: [96, 39],
+  brightWhite: [97, 39],
+  // 背景色
+  bgBlack: [40, 39],
+  bgRed: [41, 39],
+  bgGreen: [42, 39],
+  bgYellow: [43, 39],
+  bgBlue: [44, 39],
+  bgMagenta: [45, 39], // 洋红
+  bgCyan: [46, 39], // 青色
+  bgWhite: [47, 39],
+  // 背景色：亮色
+  bgBrightRed: [101, 49],
+  bgBrightGreen: [102, 49],
+  bgBrightYellow: [103, 49],
+  bgBrightBlue: [104, 49],
+  bgBrightMagenta: [105, 49],
+  bgBrightCyan: [106, 49],
+  bgBrightWhite: [107, 49],
+  // 256色
+  c256: ['38;5;#n', 39],
+  bgC256: ['48;5;#n', 49],
+  // rgb
+  rgb: ['38;2;#r;#g;#b', 39],
+  bgRgb: ['48;2;#r;#g;#b', 49]
+}
+
+interface Style {
+  open: string
+  close: string
+}
+
+const ansiStyles = {} as Record<HumanCode, Style>
+Object.entries(ANSI_SGR_CODE).forEach(item => {
+  const [key, val] = item as [HumanCode, string | number[]]
+  ansiStyles[key] = {
+    open: `\u001b[${val[0]}m`,
+    close: `\u001b[${val[1]}m`
+  }
+})
+
+// console.log(
+//   `${ansiStyles.bold.open}${ansiStyles.yellow.open}你好${ansiStyles.yellow.close}${ansiStyles.bold.close}${ansiStyles.red.open}你好${ansiStyles.red.close} 哈哈哈`
+// )
+
+interface Colors {
+  enabled?: boolean
+  enable(): void
+  disable(): void
+  stripColors(): string
+  stylize(str: string, style: HumanCode): string
+  build(style: HumanCode): (...args: any) => string
+}
+
+type Temp = Record<HumanCode, { get(): Colors['build'] }>
+
+const colors = {
+  enabled: true,
+  enable() {
+    this.enabled = true
+  },
+  disable() {
+    this.enabled = false
+  },
+  stripColors() {
+    return ''
+  },
+  stylize(str, style) {
+    if (!this.enabled) return str
+    const styleMap = ansiStyles[style]
+    return `${styleMap.open}${str}${styleMap.close}`
+  }
+} as Colors & Temp
+
+// 扩展String对象
+Object.keys(ansiStyles).forEach(key => {
+  Object.defineProperty(String.prototype, key, {
+    get() {
+      return colors.stylize(this, key as HumanCode)
+    }
+  })
+})
+// 扩展string测试
+// console.log('哈哈哈哈'.red.bgBlue)
+
+const styles = {} as Temp
+Object.keys(ansiStyles).forEach(key => {
+  styles[key as HumanCode] = {
+    get() {
+      return build(this._styles.concat(key))
+    }
+  }
+})
+const proto = Object.defineProperties({}, styles)
+
+function build(style: HumanCode[]) {
+  const builder = function (...args: any) {
+    return applyStyle.apply(builder, args)
+  }
+  builder._styles = style
+  Object.setPrototypeOf(builder, proto)
+
+  return builder
+}
+
+function init() {
+  const ret = {} as Temp
+  Object.keys(ansiStyles).forEach(key => {
+    ret[key as HumanCode] = {
+      get() {
+        return build([key as HumanCode])
+      }
+    }
+  })
+
+  return ret
+}
+Object.defineProperties(colors, init())
+
+// console.log(colors.red.red('你好啊 啊哈哈哈'))
+console.log(colors.red.red(/[1-9]/))
+
+function escapeStringRegexp(str: string) {
+  if (typeof str !== 'string') {
+    throw new TypeError('Expected a string')
+  }
+  const matchOperatorsRe = /[|\\{}()[\]^$+*?.]/g
+  const aaa = str.replace(matchOperatorsRe, '\\$&')
+  return str.replace(matchOperatorsRe, '\\$&')
+}
+
+function applyStyle(str: string, styles: any) {
+  if (!colors.enabled || !str) {
+    return str
+  }
+
+  styles = this._styles
+
+  const newLinesPresent = str.indexOf('\n') != -1
+
+  const nestedStyles = styles
+
+  let i = nestedStyles.length
+  while (i--) {
+    var code = ansiStyles[nestedStyles[i]]
+    const closeRe = new RegExp(
+      escapeStringRegexp(ansiStyles[nestedStyles[i]].close),
+      'g'
+    )
+    str = code.open + str.replace(closeRe, code.open) + code.close
+    if (newLinesPresent) {
+      const newLineRegex = new RegExp(/[\r\n]+/g)
+      str = str.replace(newLineRegex, function (match) {
+        return code.close + match + code.open
+      })
+    }
+  }
+
+  return str
+}
