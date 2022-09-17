@@ -8,7 +8,8 @@ export interface ResponseData<T> {
   data: T
 }
 
-const requestService = new Request<ResponseData>({
+// const requestService = new Request<ResponseData>({
+const requestService = new Request({
   baseURL: 'api',
   timeout: 3000,
   interceptors: {

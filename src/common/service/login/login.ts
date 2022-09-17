@@ -29,19 +29,49 @@ async function accountLoginRequest(account: IAccount) {
   return res
 }
 
+export interface IUserInfoResult {
+  id: number
+  name: string
+  realname: string
+  cellphone: string
+  enable: boolean
+  role: {
+    id: number
+    name: string
+    intro: string
+  }
+  department: {
+    id: number
+    name: string
+    leader: string
+    parentId: number
+  }
+}
+
 // 获取用户信息
 async function getUserInfo(id: number) {
-  const res = await RequestService.request({
-    url: LoginAPI.LoginUserInfo + id,
+  const res = await RequestService.request<ResponseData<IUserInfoResult>>({
+    url: LoginAPI.LoginUserInfo + id
   })
 
   return res
 }
 
+export interface IUserMenuItem {
+  icon: string
+  id: number
+  name: string
+  sort: number
+  type: number
+  url: string
+  parentId: number
+  children: IUserMenuItem[]
+}
+
 // 根据角色id获取菜单
 async function getUserMenusByRoleId(id: number) {
-  const res = await RequestService.request({
-    url: LoginAPI.UserMenus + `${id}/menu` ,
+  const res = await RequestService.request<ResponseData<IUserMenuItem[]>>({
+    url: LoginAPI.UserMenus + `${id}/menu`
   })
 
   return res

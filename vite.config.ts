@@ -11,6 +11,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // import { viteMockServe } from './mock'
 import { ViteMockServer } from './mock-bean'
+import path from 'path'
 
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   return {
@@ -87,7 +88,14 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src/apps/main', import.meta.url)),
-        '@common': fileURLToPath(new URL('./src/common', import.meta.url))
+        '@common': fileURLToPath(new URL('./src/common', import.meta.url)),
+        '@hello': fileURLToPath(new URL('./src/apps/main', import.meta.url))
+      }
+    },
+    define: {
+      // __HAHA__: path.resolve(__dirname, 'src/apps/main/router')
+      __HAHA__: {
+        path: path.resolve(__dirname, 'src/apps/main/router')
       }
     },
     css: {
