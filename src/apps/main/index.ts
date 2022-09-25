@@ -13,7 +13,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 app.use(store)
-app.use(router)
-setupStore()
+setupStore().then(() => {
+  app.use(router)
+  app.mount('#app')
+})
 
-app.mount('#app')

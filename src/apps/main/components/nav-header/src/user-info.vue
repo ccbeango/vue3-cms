@@ -25,6 +25,7 @@ import { computed } from 'vue'
 import { useLoginStore } from '@/stores'
 
 const loginStore = useLoginStore()
+console.log('loginStore', loginStore, loginStore.userInfo)
 const name = computed(() => loginStore.userInfo!.name)
 </script>
 

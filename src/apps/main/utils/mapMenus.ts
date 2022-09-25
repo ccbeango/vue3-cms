@@ -3,7 +3,7 @@ import type { IUserMenuItem } from '@common/service/login/login'
 
 export async function mapMenusToRoutes(
   userMenus: IUserMenuItem[]
-): RouteRecordRaw[] {
+) {
   const routes: RouteRecordRaw[] = []
 
   const allRoutes: RouteRecordRaw[] = []

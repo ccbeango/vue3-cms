@@ -8,7 +8,8 @@ export default store
 
 export { useCounterStore, useLoginStore }
 
-export function setupStore() {
+export async function setupStore() {
+  console.log('调用了吗')
   const loginStore = useLoginStore()
-  loginStore.loadLocalLogin()
+  await loginStore.loadLocalLogin()
 }

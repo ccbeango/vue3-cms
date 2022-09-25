@@ -16,7 +16,7 @@ import type {
 
 export const useLoginStore = defineStore('login', () => {
   const token = ref('')
-  const userInfo = ref<IUserInfoResult | null>(null)
+  const userInfo = ref<IUserInfoResult>({} as any)
   const userMenus = ref<IUserMenuItem[]>([])
 
   // 用户登录
@@ -63,6 +63,7 @@ export const useLoginStore = defineStore('login', () => {
       userMenus.value = userMenusCache
       // 动态注册路由
       const routeMenus = await mapMenusToRoutes(userMenusCache)
+      console.log('这时什么', routeMenus)
       routeMenus.forEach(route => {
         router.addRoute('main', route)
       })

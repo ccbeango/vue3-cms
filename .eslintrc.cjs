@@ -15,5 +15,6 @@ module.exports = {
   rules: {
     'no-undef': 0,
     '@typescript-eslint/no-explicit-any': 0
+    'vue/multi-word-component-names': 0
   }
 }
