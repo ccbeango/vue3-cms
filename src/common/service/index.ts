@@ -2,6 +2,7 @@ import Request from './request'
 import localCache from '@/utils/cache'
 
 export { default as LoginService } from './login/login'
+export { default as SystemService } from './main/system/system'
 
 export interface ResponseData<T> {
   code: number

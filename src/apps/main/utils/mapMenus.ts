@@ -1,9 +1,8 @@
 import type { RouteRecordRaw } from 'vue-router'
 import type { IUserMenuItem } from '@common/service/login/login'
+import type { IBreadcrumb } from '@/base-ui/breadcrumb'
 
-export async function mapMenusToRoutes(
-  userMenus: IUserMenuItem[]
-) {
+export async function mapMenusToRoutes(userMenus: IUserMenuItem[]) {
   const routes: RouteRecordRaw[] = []
 
   const allRoutes: RouteRecordRaw[] = []
@@ -26,4 +25,30 @@ export async function mapMenusToRoutes(
   recurseGetRoute(userMenus)
 
   return routes
+}
+
+export function pathMapBreadcrumbs(userMenus: any[], currentPath: string) {
+  const breadcrumbs: IBreadcrumb[] = []
+  pathMapToMenu(userMenus, currentPath, breadcrumbs)
+  return breadcrumbs
+}
+
+export function pathMapToMenu(
+  userMenus: IUserMenuItem[],
+  currentPath: string,
+  breadcrumbs?: IBreadcrumb[]
+): IUserMenuItem | undefined {
+  for (const menu of userMenus) {
+    if (menu.type === 1) {
+      const findMenu = pathMapToMenu(menu.children ?? [], currentPath)
+
+      if (findMenu) {
+        breadcrumbs?.push({ name: menu.name })
+        breadcrumbs?.push({ name: findMenu.name, path: findMenu.url })
+        return findMenu
+      }
+    } else if (menu.type === 2 && menu.url === currentPath) {
+      return menu
+    }
+  }
 }

@@ -1,6 +1,9 @@
 <template>
   <div class="bean-form">
-    <el-form :label-width="labelWidth">
+    <div class="header">
+      <slot name="header"></slot>
+    </div>
+    <el-form :label-width="labelWidth" @input="handle">
       <el-row>
         <template v-for="item in formItems" :key="item.label">
           <el-col v-bind="colLayout">
@@ -11,6 +14,7 @@
             >
               <el-input
                 v-if="item.type === 'input' || item.type === 'password'"
+                v-model="formData[item.field]"
                 v-bind="item.otherOptions"
                 :show-password="item.type === 'password'"
                 :placeholder="item.placeholder"
@@ -18,6 +22,7 @@
               <el-select
                 v-if="item.type === 'select'"
                 style="width: 100%"
+                v-model="formData[item.field]"
                 :placeholder="item.placeholder"
                 :v-bind="item.otherOptions"
               >
@@ -30,6 +35,7 @@
               </el-select>
               <el-date-picker
                 v-else-if="item.type === 'datepicker'"
+                v-model="formData[item.field]"
                 style="width: 100%"
                 v-bind="item.otherOptions"
               ></el-date-picker>
@@ -38,13 +44,17 @@
         </template>
       </el-row>
     </el-form>
+    <div class="footer">
+      <slot name="footer"></slot>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { computed, ref, watch } from 'vue'
 import type { IFormItem } from '../types'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     labelWidth: string
     formItems: IFormItem[]
@@ -57,6 +67,7 @@ withDefaults(
       sm?: number
       xs?: number
     }
+    modelValue: { [key: string]: any }
   }>(),
   {
     labelWidth: '100px',
@@ -70,6 +81,45 @@ withDefaults(
     })
   }
 )
+
+const emit = defineEmits(['update:modelValue'])
+
+// 方法1： 并没有触发set 未实现双向绑定，其实是直接修改了对象的值
+// const formData = computed({
+//   get() {
+//     console.log('zheshi什么', props.modelValue)
+//     return props.modelValue
+//   },
+//   set(value) {
+//     console.log('这触发了吗', value)
+//     emit('update:modelValue', value)
+//   }
+// })
+
+// 方法2：虽然触发了handle，但也是直接修改了原对象的值，不使用emit也可以
+// const formData = computed(() => {
+//   return props.modelValue
+// })
+// function handle() {
+//   emit('update:modelValue', formData)
+// }
+
+// 方法3：重新赋值，真正的双向绑定
+const formData = ref({ ...props.modelValue })
+function handle() {
+  emit('update:modelValue', formData)
+}
+
+// 方法3：重新赋值，使用watch实现双向绑定
+// const formData = ref({ ...props.modelValue })
+// watch(
+//   formData,
+//   newValue => {
+//     console.log('新值', newValue)
+//     emit('update:modelValue', newValue)
+//   },
+//   { deep: true }
+// )
 </script>
 
 <style scoped></style>

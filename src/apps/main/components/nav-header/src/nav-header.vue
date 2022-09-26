@@ -5,15 +5,19 @@
       <Expand v-else />
     </el-icon>
     <div class="content">
-      <div>面包屑</div>
+      <BeanBreadcrumb :breadcrumbs="breadcrumbs" />
       <UserInfo />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { computed, defineProps } from 'vue'
+import { useRoute } from 'vue-router';
+import { useLoginStore } from '@/stores';
+import BeanBreadcrumb from '@/base-ui/breadcrumb'
 import UserInfo from './user-info.vue'
+import { pathMapBreadcrumbs } from '@/utils/mapMenus'
 
 const props = defineProps<{
   collapse: boolean
@@ -26,6 +30,17 @@ const emit = defineEmits<{
 const handleCollapseClick = () => {
   emit('collapseChange', !props.collapse)
 }
+
+// 面包屑数据
+const loginStore = useLoginStore()
+const breadcrumbs = computed(() => {
+  const userMenus = loginStore.userMenus
+  const route = useRoute()
+  const currentPath = route.path
+  return pathMapBreadcrumbs(userMenus, currentPath)
+})
+
+
 </script>
 
 <style lang="scss" scoped>

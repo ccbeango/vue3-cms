@@ -41,6 +41,10 @@ router.beforeEach(to => {
       return '/login'
     }
   }
+
+  // if (to.path === '/main') {
+  //   return '/main/analysis/overview'
+  // }
 })
 
 export default router
