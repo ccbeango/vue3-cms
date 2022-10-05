@@ -42,9 +42,9 @@ router.beforeEach(to => {
     }
   }
 
-  // if (to.path === '/main') {
-  //   return '/main/analysis/overview'
-  // }
+  if (to.path === '/main') {
+    return '/main/analysis/overview'
+  }
 })
 
 export default router

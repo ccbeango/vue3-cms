@@ -65,8 +65,7 @@ const route = useRoute()
 const currentPath = route.path
 
 const menu = pathMapToMenu(userMenus.value, currentPath)
-// const defaultValue = ref(menu!.id + '')
-const defaultValue = ref('1')
+const defaultValue = ref(menu!.id + '')
 
 const handleMenuItemClick = (item: IUserMenuItem) => {
   router.push({

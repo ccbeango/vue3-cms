@@ -9,7 +9,7 @@ export interface IFormItem {
   rules?: any[]
   placeholder?: string
   // 针对select
-  options?: { label: string | number; value: string }[]
+  options?: { label: string | number; value: string | number }[]
   // 针对特殊的属性
   otherOptions?: any
 }

@@ -14,3 +14,5 @@ export async function setupStore() {
   const loginStore = useLoginStore()
   await loginStore.loadLocalLogin()
 }
+
+export type { SystemPageListColumn, SystemPageCountColumn } from './types'

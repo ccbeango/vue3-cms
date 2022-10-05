@@ -3,7 +3,8 @@
     <div class="header">
       <slot name="header"></slot>
     </div>
-    <el-form :label-width="labelWidth" @input="handle">
+    <el-form :label-width="labelWidth">
+      <!-- @input="handle" -->
       <el-row>
         <template v-for="item in formItems" :key="item.label">
           <el-col v-bind="colLayout">
@@ -12,9 +13,18 @@
               :rules="item.rules"
               :style="itemStyle"
             >
-              <el-input
+              <!-- watch实现双向绑定写法  -->
+              <!-- <el-input
                 v-if="item.type === 'input' || item.type === 'password'"
                 v-model="formData[item.field]"
+                v-bind="item.otherOptions"
+                :show-password="item.type === 'password'"
+                :placeholder="item.placeholder"
+              /> -->
+              <el-input
+                v-if="item.type === 'input' || item.type === 'password'"
+                :model-value="modelValue[`${item.field}`]"
+                @update:modelValue="handleValueChange($event, item.field)"
                 v-bind="item.otherOptions"
                 :show-password="item.type === 'password'"
                 :placeholder="item.placeholder"
@@ -22,7 +32,8 @@
               <el-select
                 v-if="item.type === 'select'"
                 style="width: 100%"
-                v-model="formData[item.field]"
+                :model-value="modelValue[`${item.field}`]"
+                @update:modelValue="handleValueChange($event, item.field)"
                 :placeholder="item.placeholder"
                 :v-bind="item.otherOptions"
               >
@@ -30,12 +41,13 @@
                   v-for="option in item.options"
                   :key="option.value"
                   :value="option.value"
-                  >{{ option.label }}</el-option
-                >
+                  :label="option.label"
+                />
               </el-select>
               <el-date-picker
                 v-else-if="item.type === 'datepicker'"
-                v-model="formData[item.field]"
+                :model-value="modelValue[`${item.field}`]"
+                @update:modelValue="handleValueChange($event, item.field)"
                 style="width: 100%"
                 v-bind="item.otherOptions"
               ></el-date-picker>
@@ -51,7 +63,6 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
 import type { IFormItem } from '../types'
 
 const props = withDefaults(
@@ -84,6 +95,11 @@ const props = withDefaults(
 
 const emit = defineEmits(['update:modelValue'])
 
+// 不使用双向绑定
+const handleValueChange = (value: any, field: string) => {
+  emit('update:modelValue', { ...props.modelValue, [field]: value })
+}
+
 // 方法1： 并没有触发set 未实现双向绑定，其实是直接修改了对象的值
 // const formData = computed({
 //   get() {
@@ -104,13 +120,13 @@ const emit = defineEmits(['update:modelValue'])
 //   emit('update:modelValue', formData)
 // }
 
-// 方法3：重新赋值，真正的双向绑定
-const formData = ref({ ...props.modelValue })
-function handle() {
-  emit('update:modelValue', formData)
-}
+// 方法3：重新赋值，真正的双向绑定 但是无法在外面清除重置
+// const formData = ref({ ...props.modelValue })
+// function handle() {
+//   emit('update:modelValue', formData)
+// }
 
-// 方法3：重新赋值，使用watch实现双向绑定
+// 方法3：可用方法 重新赋值，使用watch实现双向绑定
 // const formData = ref({ ...props.modelValue })
 // watch(
 //   formData,

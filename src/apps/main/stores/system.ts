@@ -3,21 +3,33 @@ import { ref } from 'vue'
 import { SystemService } from '@common/service'
 
 export const useSystemStore = defineStore('system', () => {
-  const userList = ref([])
-  const userCount = ref(0)
-
+  // 用户管理
+  const usersList = ref([])
+  const usersCount = ref(0)
+  // 角色管理
+  const roleList = ref([])
+  const roleCount = ref(0)
 
   const getPageListAction = async (payload: any) => {
-    const res = await SystemService.getPageListData(payload.pageUrl, payload.queryInfo)
+    const pageName: 'users' | 'role' = payload.pageName
+    const pageUrl = `/${pageName}/list`
 
-    userList.value = res.data.list
-    userCount.value = res.data.totalCount
+    const res = await SystemService.getPageListData(pageUrl, payload.queryInfo)
+    // usersList.value = res.data.list
+    // usersCount.value = res.data.totalCount
+    const map = {
+      users: { usersList, usersCount },
+      role: { roleList, roleCount }
+    }
+    ;(map[pageName] as any)[`${pageName}List`].value = res.data.list
+    ;(map[pageName] as any)[`${pageName}Count`].value = res.data.totalCount
   }
 
   return {
-    userList,
-    userCount,
+    usersList,
+    usersCount,
+    roleList,
+    roleCount,
     getPageListAction
   }
-
 })

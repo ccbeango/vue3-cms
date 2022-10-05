@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router';
 import { useLoginStore } from '@/stores';
 import BeanBreadcrumb from '@/base-ui/breadcrumb'
