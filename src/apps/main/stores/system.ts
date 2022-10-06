@@ -16,6 +16,7 @@ export const useSystemStore = defineStore('system', () => {
   const menuList = ref([])
   const menuCount = ref(0)
 
+  // 查询列表
   const getPageListAction = async (payload: any) => {
     const pageName: 'users' | 'role' = payload.pageName
     const pageUrl = `/${pageName}/list`
@@ -33,6 +34,75 @@ export const useSystemStore = defineStore('system', () => {
     ;(map[pageName] as any)[`${pageName}Count`].value = res.data.totalCount
   }
 
+  // 创建数据
+  const createPageDataAction = async (payload: any) => {
+    const { pageName, newData } = payload
+    const pageUrl = `/${pageName}`
+    await SystemService.createPageData(pageUrl, newData)
+
+    // 重新拉取最新数据
+    getPageListAction({
+      pageName,
+      queryInfo: {
+        offset: 0,
+        size: 10
+      }
+    })
+  }
+
+  // 编辑数据
+  const editPageDataAction = async (payload: any) => {
+    const { pageName, editData, id } = payload
+    const pageUrl = `/${pageName}/${id}`
+    await SystemService.editPageData(pageUrl, editData)
+
+    // 重新拉取最新数据
+    getPageListAction({
+      pageName,
+      queryInfo: {
+        offset: 0,
+        size: 10
+      }
+    })
+  }
+
+  // 删除数据
+  const deletePageDataAction = async (payload: any) => {
+    const { pageName, id } = payload
+    const pageUrl = `/${pageName}/${id}`
+    await SystemService.deletePageData(pageUrl)
+
+    // 重新拉取最新数据
+    getPageListAction({
+      pageName,
+      queryInfo: {
+        offset: 0,
+        size: 10
+      }
+    })
+  }
+
+
+  const entireDepartment = ref<any[]>([])
+  const entireRole = ref<any[]>([])
+  const getInitialDataAction = async () => {
+    // 1.请求部门和角色数据
+    const departmentResult = await SystemService.getPageListData('/department/list', {
+      offset: 0,
+      size: 1000
+    })
+    const { list: departmentList } = departmentResult.data
+    const roleResult = await SystemService.getPageListData('/role/list', {
+      offset: 0,
+      size: 1000
+    })
+    const { list: roleList } = roleResult.data
+
+    // 2.保存数据
+    entireDepartment.value = departmentList
+    entireRole.value = roleList
+  }
+
   return {
     usersList,
     usersCount,
@@ -42,6 +112,14 @@ export const useSystemStore = defineStore('system', () => {
     goodsCount,
     menuList,
     menuCount,
-    getPageListAction
+    getPageListAction,
+    createPageDataAction,
+    editPageDataAction,
+    deletePageDataAction,
+
+
+    entireDepartment,
+    entireRole,
+    getInitialDataAction
   }
 })

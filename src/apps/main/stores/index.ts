@@ -12,6 +12,9 @@ export { useCounterStore, useLoginStore, useSystemStore }
 export async function setupStore() {
   const loginStore = useLoginStore()
   await loginStore.loadLocalLogin()
+
+  const systemStore = useSystemStore()
+  await systemStore.getInitialDataAction()
 }
 
 export type { SystemPageListColumn, SystemPageCountColumn } from './types'

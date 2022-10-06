@@ -1,7 +1,6 @@
 import RequestService from '../../index'
 import type { ResponseData } from '../../index'
 
-
 function getPageListData(url: string, queryInfo: any) {
   return RequestService.request<ResponseData<any>>({
     url: url,
@@ -10,6 +9,32 @@ function getPageListData(url: string, queryInfo: any) {
   })
 }
 
+function deletePageData(url: string) {
+  return RequestService.request<ResponseData<any>>({
+    url,
+    method: 'delete'
+  })
+}
+
+function createPageData(url: string, newData: any) {
+  return RequestService.request<ResponseData<any>>({
+    url,
+    method: 'post',
+    data: newData
+  })
+}
+
+export function editPageData(url: string, editData: any) {
+  return RequestService.request<ResponseData<any>>({
+    url: url,
+    method: 'patch',
+    data: editData
+  })
+}
+
 export default {
-  getPageListData
+  getPageListData,
+  deletePageData,
+  createPageData,
+  editPageData
 }

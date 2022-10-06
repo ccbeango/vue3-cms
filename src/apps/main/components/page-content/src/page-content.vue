@@ -7,7 +7,10 @@
       :totalCount="totalCount"
     >
       <template #headerHandler>
-        <el-button v-if="isCreate" type="primary" size="medium"
+        <el-button
+          v-if="isCreate"
+          type="primary"
+          @click="handleNewClick"
           >新建用户</el-button
         >
       </template>
@@ -18,10 +21,22 @@
       <template #updateAt="scope">
         <span>{{ $filters.formatTime(scope.row.updateAt) }}</span>
       </template>
-      <template #handler>
+      <template #handler="scope">
         <div class="handle-btns">
-          <el-button :icon="Edit" type="text" v-if="isUpdate">编辑</el-button>
-          <el-button :icon="Delete" type="text" v-if="isDelete">删除</el-button>
+          <el-button
+            :icon="Edit"
+            type="text"
+            v-if="isUpdate"
+            @click="handleEditClick(scope.row)"
+            >编辑</el-button
+          >
+          <el-button
+            :icon="Delete"
+            type="text"
+            v-if="isDelete"
+            @click="handleDeleteClick(scope.row)"
+            >删除</el-button
+          >
         </div>
       </template>
 
@@ -73,7 +88,6 @@ const getPageData = (queryInfo: any = {}) => {
   })
 }
 getPageData()
-
 defineExpose({
   getPageData
 })
@@ -91,6 +105,27 @@ const otherPropSlots: any = props.contentTableConfig.propList.filter(item => {
   if (commonSlots.includes(item.slotName)) return false
   return true
 })
+
+const emit = defineEmits<{
+  (e: 'newBtnClick'): void
+  (e: 'editBtnClick', val: any): void
+}>()
+
+// 新增
+const handleNewClick = () => {
+  emit('newBtnClick')
+}
+// 编辑
+const handleEditClick = (item: any) => {
+  emit('editBtnClick', item)
+}
+// 删除
+const handleDeleteClick = (item: any) => {
+  systemStore.deletePageDataAction({
+    pageName: props.pageName,
+    id: item.id
+  })
+}
 </script>
 
 <style lang="scss" scoped>
