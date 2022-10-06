@@ -12,5 +12,5 @@ export default function usePageSearch() {
     pageContentRef.value?.getPageData(queryInfo)
   }
 
-  return [pageContentRef, handleResetClick, handleQueryClick]
+  return { pageContentRef, handleResetClick, handleQueryClick }
 }

@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import router from '@/router'
 
 import LocalCache from '@/utils/cache'
-import { mapMenusToRoutes } from '@/utils/mapMenus'
+import { mapMenusToRoutes, mapMenusToPermissions } from '@/utils/mapMenus'
 
 import { LoginService } from '@common/service'
 
@@ -18,6 +18,8 @@ export const useLoginStore = defineStore('login', () => {
   const token = ref('')
   const userInfo = ref<IUserInfoResult>({} as any)
   const userMenus = ref<IUserMenuItem[]>([])
+  // 按钮权限
+  const btnPermissions = ref<string[]>([])
 
   // 用户登录
   const accountLoginAction = async (payload: IAccount) => {
@@ -45,6 +47,10 @@ export const useLoginStore = defineStore('login', () => {
       router.addRoute('main', route)
     })
 
+    // 获取用户按钮权限
+    const permissions = mapMenusToPermissions(userMenus.value)
+    btnPermissions.value = permissions
+
     router.push('/main')
   }
 
@@ -63,10 +69,13 @@ export const useLoginStore = defineStore('login', () => {
       userMenus.value = userMenusCache
       // 动态注册路由
       const routeMenus = await mapMenusToRoutes(userMenusCache)
-      console.log('这时什么', routeMenus)
       routeMenus.forEach(route => {
         router.addRoute('main', route)
       })
+
+      // 获取用户按钮权限
+      const permissions = mapMenusToPermissions(userMenus.value)
+      btnPermissions.value = permissions
     }
   }
 
@@ -74,6 +83,7 @@ export const useLoginStore = defineStore('login', () => {
     token,
     userInfo,
     userMenus,
+    btnPermissions,
 
     // action
     accountLoginAction,

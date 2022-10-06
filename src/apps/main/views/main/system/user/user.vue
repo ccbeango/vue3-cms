@@ -9,7 +9,16 @@
       ref="pageContentRef"
       :contentTableConfig="contentTableConfig"
       pageName="users"
-    />
+    >
+      <template #status="scope">
+        <el-button
+          size="small"
+          plain
+          :type="scope.row.enable ? 'success' : 'danger'"
+          >{{ scope.row.enable ? '启用' : '禁用' }}</el-button
+        >
+      </template>
+    </PageContent>
   </div>
 </template>
 
@@ -22,7 +31,7 @@ import { contentTableConfig } from './config/content.config'
 
 import { usePageSearch } from '@/hooks'
 
-const [pageContentRef, handleResetClick, handleQueryClick] = usePageSearch()
+const { pageContentRef, handleResetClick, handleQueryClick } = usePageSearch()
 </script>
 
 <style scoped lang="scss"></style>

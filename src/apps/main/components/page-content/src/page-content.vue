@@ -7,17 +7,11 @@
       :totalCount="totalCount"
     >
       <template #headerHandler>
-        <el-button type="primary" size="medium">新建用户</el-button>
-      </template>
-
-      <template #status="scope">
-        <el-button
-          size="small"
-          plain
-          :type="scope.row.enable ? 'success' : 'danger'"
-          >{{ scope.row.enable ? '启用' : '禁用' }}</el-button
+        <el-button v-if="isCreate" type="primary" size="medium"
+          >新建用户</el-button
         >
       </template>
+
       <template #createAt="scope">
         <span>{{ $filters.formatTime(scope.row.createAt) }}</span>
       </template>
@@ -26,9 +20,18 @@
       </template>
       <template #handler>
         <div class="handle-btns">
-          <el-button :icon="Edit" type="text">编辑</el-button>
-          <el-button :icon="Delete" type="text">删除</el-button>
+          <el-button :icon="Edit" type="text" v-if="isUpdate">编辑</el-button>
+          <el-button :icon="Delete" type="text" v-if="isDelete">删除</el-button>
         </div>
+      </template>
+
+      <!-- 动态插槽 -->
+      <template
+        v-for="item in otherPropSlots"
+        :key="item.prop"
+        #[item.slotName]="scope"
+      >
+        <slot :name="item.slotName" :row="scope.row"></slot>
       </template>
     </BeanTable>
   </div>
@@ -41,6 +44,7 @@ import type { SystemPageListColumn, SystemPageCountColumn } from '@/stores'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import BeanTable from '@/base-ui/table'
 import type { ITable } from '@/base-ui/table'
+import { usePermission } from '@/hooks'
 
 const props = defineProps<{
   contentTableConfig: ITable
@@ -48,10 +52,17 @@ const props = defineProps<{
 }>()
 const systemStore = useSystemStore()
 
+// 0.获取操作的权限
+const isCreate = usePermission(props.pageName, 'create')
+const isUpdate = usePermission(props.pageName, 'update')
+const isDelete = usePermission(props.pageName, 'delete')
+const isQuery = usePermission(props.pageName, 'query')
+
 const pageInfo = ref({ currentPage: 0, pageSize: 10 })
 watch(pageInfo, () => getPageData())
 
 const getPageData = (queryInfo: any = {}) => {
+  if (!isQuery) return
   systemStore.getPageListAction({
     pageName: props.pageName,
     queryInfo: {
@@ -73,6 +84,13 @@ const dataList = computed(
 const totalCount = computed(
   () => systemStore[`${props.pageName}Count` as SystemPageCountColumn]
 )
+
+// 获取其它动态插槽
+const otherPropSlots: any = props.contentTableConfig.propList.filter(item => {
+  const commonSlots = [undefined, 'createAt', 'updateAt', 'handler']
+  if (commonSlots.includes(item.slotName)) return false
+  return true
+})
 </script>
 
 <style lang="scss" scoped>

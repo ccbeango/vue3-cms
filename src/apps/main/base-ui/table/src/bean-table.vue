@@ -8,7 +8,7 @@
         </div>
       </slot>
     </div>
-    <el-table :data="listData" style="width: 100%">
+    <el-table :data="listData" style="width: 100%" v-bind="childrenProps">
       <el-table-column
         v-if="showSelectColumn"
         type="selection"
@@ -23,7 +23,7 @@
         width="80"
       ></el-table-column>
       <template v-for="propItem in propList" :key="propItem.prop">
-        <el-table-column v-bind="propItem" align="center">
+        <el-table-column v-bind="propItem" align="center" show-overflow-tooltip>
           <template #default="scope">
             <slot :name="propItem.slotName" :row="scope.row">{{
               scope.row[propItem.prop]
@@ -38,7 +38,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="page.currentPage"
-          :page-sizes="[10, 20, 30]"
+          :page-sizes="[5, 10, 20, 30]"
           :page-size="page.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="totalCount"
@@ -59,7 +59,8 @@ const props = withDefaults(
     showSelectColumn?: boolean
     listData: any[]
     totalCount: number
-    propList: ITablePropItem[]
+    propList: ITablePropItem[],
+    childrenProps?: any
     page: { currentPage: number; pageSize: number }
   }>(),
   {

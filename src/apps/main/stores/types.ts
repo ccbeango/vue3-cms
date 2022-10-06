@@ -1,3 +1,3 @@
-export type SystemPageListColumn = 'usersList' | 'roleList'
+export type SystemPageListColumn = 'usersList' | 'roleList' | 'goodsList'
 
-export type SystemPageCountColumn = 'usersCount' | 'roleCount'
+export type SystemPageCountColumn = 'usersCount' | 'roleCount' | 'goodsCount'

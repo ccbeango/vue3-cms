@@ -10,7 +10,6 @@ export default store
 export { useCounterStore, useLoginStore, useSystemStore }
 
 export async function setupStore() {
-  console.log('调用了吗')
   const loginStore = useLoginStore()
   await loginStore.loadLocalLogin()
 }
