@@ -85,22 +85,28 @@ export const useSystemStore = defineStore('system', () => {
 
   const entireDepartment = ref<any[]>([])
   const entireRole = ref<any[]>([])
+  const entireMenu = ref<any[]>([])
   const getInitialDataAction = async () => {
-    // 1.请求部门和角色数据
+    // 1.请求部门数据
     const departmentResult = await SystemService.getPageListData('/department/list', {
       offset: 0,
       size: 1000
     })
     const { list: departmentList } = departmentResult.data
+    // 2.请求角色数据
     const roleResult = await SystemService.getPageListData('/role/list', {
       offset: 0,
       size: 1000
     })
     const { list: roleList } = roleResult.data
+    // 3.请求菜单数据
+    const menuResult = await SystemService.getPageListData('/menu/list', {})
+    const { list: menuList } = menuResult.data
 
-    // 2.保存数据
+    // 保存数据
     entireDepartment.value = departmentList
     entireRole.value = roleList
+    entireMenu.value = menuList
   }
 
   return {
@@ -120,6 +126,7 @@ export const useSystemStore = defineStore('system', () => {
 
     entireDepartment,
     entireRole,
+    entireMenu,
     getInitialDataAction
   }
 })

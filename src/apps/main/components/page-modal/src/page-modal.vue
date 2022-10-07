@@ -8,6 +8,7 @@
       destroy-on-close
     >
       <BeanForm v-bind="modalConfig" v-model="formData"></BeanForm>
+      <slot></slot>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
@@ -29,6 +30,7 @@ import { useSystemStore } from '@/stores'
 const props = defineProps<{
   modalConfig: IForm
   defaultInfo: any
+  otherInfo?: any
   pageName: string
 }>()
 
@@ -47,19 +49,20 @@ const systemStore = useSystemStore()
 const dialogVisible = ref(false)
 const handleConfirmClick = () => {
   dialogVisible.value = false
+  console.log('数据是什么', props.otherInfo)
 
   if (Object.keys(props.defaultInfo).length) {
     // 编辑
     systemStore.editPageDataAction({
       pageName: props.pageName,
       id: props.defaultInfo.id,
-      editData: { ...formData.value }
+      editData: { ...formData.value, ...props.otherInfo }
     })
   } else {
     // 新增
     systemStore.createPageDataAction({
       pageName: props.pageName,
-      newData: { ...formData.value }
+      newData: { ...formData.value, ...props.otherInfo }
     })
   }
 }
